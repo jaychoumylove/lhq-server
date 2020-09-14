@@ -1,0 +1,9 @@
+
+runtime/
+think
+vendor/
+public/test
+thinkphp
+.idea
+.vscode
+__MACOSX
