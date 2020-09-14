@@ -5,5 +5,8 @@ use app\base\controller\Base;
 
 class Task extends Base
 {
-
+    public function settle()
+    {
+        // 完成任务
+    }
 }

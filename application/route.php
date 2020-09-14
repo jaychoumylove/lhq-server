@@ -18,31 +18,24 @@ Route::rule('api/:version/notify/receive', 'api/v1.Notify/receive');// 客服消
 Route::rule('api/:version/notify/auth', 'api/v1.Notify/getAuth');// 
 
 // Page 
-Route::rule('api/:version/page/app', 'api/v1.Page/app');
+Route::rule('api/:version/page/index', 'api/v1.Page/index');
+Route::rule('api/:version/page/friend_rank', 'api/v1.Page/friendRank');
+Route::rule('api/:version/page/rank', 'api/v1.Page/rank');
+Route::rule('api/:version/page/user_info', 'api/v1.Page/userInfo');
+Route::rule('api/:version/page/bill', 'api/v1.Page/bill');
+Route::rule('api/:version/page/qrcode', 'api/v1.Page/qrCode');
+Route::rule('api/:version/page/withdraw_log', 'api/v1.Page/withdrawLog');
+
+
+Route::rule('api/:version/bill/lottery', 'api/v1.Bill/lottery'); // 抽奖
+Route::rule('api/:version/bill/withdraw', 'api/v1.Bill/withdraw'); // 发起提现
 
 // User
 Route::rule('api/:version/user/login', 'api/v1.User/login');// 登录
-Route::rule('api/:version/user/login_app', 'api/v1.User/login_app');// 登录
 
 Route::rule('api/:version/user/saveinfo', 'api/v1.User/saveInfo');// 保存用户详细信息
 Route::rule('api/:version/user/savephone', 'api/v1.User/savePhone');// 保存用户详细信息
-Route::rule('api/:version/user/edit', 'api/v1.User/edit');// 修改用户头像和昵称
 Route::rule('api/:version/user/info', 'api/v1.User/getInfo');// 获取用户详细信息
 
-// Pay
-Route::rule('api/:version/pay/order', 'api/v1.Payment/order');// 支付下单
-Route::rule('api/:version/pay/notify/:platform', 'api/v1.Payment/notify');// 支付通知
-Route::rule('api/:version/pay/goods', 'api/v1.Payment/goods');// 商品列表
-Route::rule('api/:version/pay/alipaynotify', 'api/v1.Payment/alipayNotify');// 支付下单
-
 // Task
-Route::rule('api/:version/task', 'api/v1.Task/index');// 任务
-Route::rule('api/:version/task/settle', 'api/v1.Task/settle');// 任务领取
-
-Route::rule('api/:version/uploadIndex', 'api/v1.Ext/uploadIndex');// 文件上传
-Route::rule('api/:version/upload', 'api/v1.Ext/upload');// 文件上传
-Route::rule('api/:version/ragreement', 'api/v1.Ext/rAgreement');// 文件上传
-
-Route::rule('api/:version/page/sendSms', 'api/v1.Page/sendSms');//使用道具
-
-Route::rule('api/:version/ad/custom', 'api/v1.Page/customAd'); // 公益打卡信息
+Route::rule('api/:version/task/settle', 'api/v1.Task/settle');// 完成任务

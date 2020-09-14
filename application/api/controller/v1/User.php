@@ -127,26 +127,4 @@ class User extends Base
         // 粉丝团
         Common::res(['data' => $res]);
     }
-
-    public function edit()
-    {
-        $this->getUser();
-        if(UserModel::where('id', $this->uid)->value('type')==3) Common::res(['code' => 1, 'msg' => '暂停修改用户信息，钻石未扣除']);
-        $res['avatarurl'] = $this->req('avatar', 'require');
-        $res['nickname'] = $this->req('nickname', 'require');
-        (new WxAPI())->msgCheck($res['nickname']);//非法词检测
-
-        Db::startTrans();
-        try {
-            (new UserService)->change($this->uid, ['stone' => -100], '修改个人信息');
-            UserModel::where('id', $this->uid)->update($res);
-
-            Db::commit();
-        } catch (Exception $e) {
-            Db::rollback();
-            Common::res(['code' => 400, 'msg' => $e->getMessage()]);
-        }
-
-        Common::res();
-    }
 }

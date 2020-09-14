@@ -8,7 +8,6 @@ use app\base\service\WxAPI;
 
 class Notify extends Base
 {
-
     private $wxMsg;
     public function receive()
     {
