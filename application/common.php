@@ -11,118 +11,58 @@
 
 // 应用公共文件
 
-function curl_post($url, array $params = array())
+function test($a)
 {
-    $data_string = json_encode($params);
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    curl_setopt(
-        $ch, CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: app/json'
-        )
-    );
-    $data = curl_exec($ch);
-    curl_close($ch);
-    return ($data);
+    echo a;
+
+    echo input('a');
 }
 
-function curl_post_raw($url, $rawData)
+//检查动图
+function IsAnimatedGif($filename)
 {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $rawData);
-    curl_setopt(
-        $ch, CURLOPT_HTTPHEADER,
-        array(
-            'Content-Type: text'
-        )
-    );
-    $data = curl_exec($ch);
-    curl_close($ch);
-    return ($data);
+    $fp = fopen($filename, 'rb');
+    $filecontent = fread($fp, filesize($filename));
+    fclose($fp);
+    return strpos($filecontent,chr(0x21).chr(0xff).chr(0x0b).'NETSCAPE2.0') === FALSE?0:1;
 }
 
-/**
- * @param string $url get请求地址
- * @param int $httpCode 返回状态码
- * @return mixed
- */
-function curl_get($url, &$httpCode = 0)
+function get_onlineip()
 {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $my_curl = curl_init();
 
-    //不做证书校验,部署在linux环境下请改为true
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-    $file_contents = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return $file_contents;
+    curl_setopt($my_curl, CURLOPT_URL, "ns1.dnspod.net:6666");
+
+    curl_setopt($my_curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $ip = curl_exec($my_curl);
+
+    curl_close($my_curl);
+
+    return $ip;
 }
 
-function getRandChar($length)
+function formatNumber($number)
 {
-    $str = null;
-    $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-    $max = strlen($strPol) - 1;
-
-    for ($i = 0;
-         $i < $length;
-         $i++) {
-        $str .= $strPol[rand(0, $max)];
+    if (empty($number) || !is_numeric($number)) return $number;
+    $unit = "";
+    if ($number > 100000000) {
+        $leftNumber = floor($number / 100000000);
+        $rightNumber = round(($number % 100000000) / 100000000, 1);
+        $number = floatval($leftNumber + $rightNumber);
+        $unit = "亿";        
     }
-
-    return $str;
-}
-
-function fromArrayToModel($m, $array)
-{
-    foreach ($array as $key => $value) {
-        $m[$key] = $value;
+    elseif ($number > 10000) {
+        $leftNumber = floor($number / 10000);
+        $rightNumber = round(($number % 10000) / 10000, 1);
+        // $rightNumber = bcmul(($number % 10000) / 10000, '1', 2);
+        $number = floatval($leftNumber + $rightNumber);
+        $unit = "万";
+    } else {
+        $decimals = $number > 1 ? 2 : 6;
+        $number = (float)number_format($number, $decimals, '.', '');
     }
-    return $m;
+    return (string)$number . $unit;
 }
 
-//HTTP请求（支持HTTP/HTTPS，支持GET/POST）
-function http_request($url, $data = null)
-{
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-
-    if (!empty($data)) {
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-    }
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-    $output = curl_exec($curl);
-    curl_close($curl);
-    return $output;
-}
-
-function jump($url)
-{
-    header("Location:$url");
-    exit;
-}
-
-function uncamelize($camelCaps, $separator = '_')
-{
-    return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $separator . "$2", $camelCaps));
-}
 

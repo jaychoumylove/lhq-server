@@ -7,3 +7,6 @@ thinkphp
 .idea
 .vscode
 __MACOSX
+.env
+composer.lock
+*.log

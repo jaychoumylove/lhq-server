@@ -15,9 +15,9 @@ return [
     // +----------------------------------------------------------------------
 
     // 应用调试模式
-    'app_debug'              => \think\Env::get('app_debug'),
+    'app_debug'              => true,
     // 应用Trace
-    'app_trace'              => \think\Env::get('app_trace'),
+    'app_trace'              => false,
     // 应用模式状态
     'app_status'             => '',
     // 是否支持多模块
@@ -89,9 +89,11 @@ return [
     // 是否开启路由
     'url_route_on'           => true,
     // 路由使用完整匹配
-    'route_complete_match'   => false,
+    'route_complete_match'   => true,
     // 路由配置文件（支持配置多个）
     'route_config_file'      => ['route'],
+    // 是否开启路由解析缓存
+    'route_check_cache'      => false,
     // 是否强制使用路由
     'url_route_must'         => false,
     // 域名部署
@@ -122,6 +124,8 @@ return [
     'template'               => [
         // 模板引擎类型 支持 php think 支持扩展
         'type'         => 'Think',
+        // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写
+        'auto_rule'    => 1,
         // 模板路径
         'view_path'    => '',
         // 模板后缀
@@ -156,7 +160,7 @@ return [
     // 显示错误信息
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \think\exception\Handle
-    'exception_handle'       => 'app\lib\exception\ExceptionHandler',
+    'exception_handle'       => '',
 
     // +----------------------------------------------------------------------
     // | 日志设置
@@ -168,7 +172,9 @@ return [
         // 日志保存目录
         'path'  => LOG_PATH,
         // 日志记录级别
-        'level' => [],
+        'level' => ['error'],
+        // 日志文件最多只会保留30个，超过会自动清理较早的日志文件，避免日志文件长期写入占满磁盘空间
+        'max_files' => 30
     ],
 
     // +----------------------------------------------------------------------
