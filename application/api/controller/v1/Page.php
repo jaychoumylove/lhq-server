@@ -191,10 +191,12 @@ class Page extends Base
         $signAble = true;
         if (array_key_exists(\app\api\model\Task::SIGN, $userTaskDict)) {
             $userSignTask = $userTaskDict[\app\api\model\Task::SIGN];
-            $signCurrent = bcadd($userSignTask['number'], 1);
             $settleDay = date('d', strtotime($userSignTask['last_settle_time']));
             if (date('d', $currentTime) != $settleDay) {
                 $signAble = true;
+                $signCurrent = bcadd($userSignTask['number'], 1);
+            } else {
+                $signCurrent = $userSignTask['number'];
             }
         }
 
