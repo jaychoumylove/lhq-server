@@ -30,7 +30,9 @@ class Bill extends \app\base\controller\Base
         // 抽奖
         $this->getUser();
 
+        $item = UserBill::lottery($this->uid);
 
+        Common::res(['data' => $item]);
     }
 
     public function doubleLottery()
