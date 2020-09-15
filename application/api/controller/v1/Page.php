@@ -5,6 +5,7 @@ namespace app\api\controller\v1;
 
 use app\api\model\Lottery;
 use app\api\model\LotteryLog;
+use app\api\model\UserBill;
 use app\api\model\UserState;
 use app\api\model\UserTask;
 use app\base\controller\Base;
@@ -263,15 +264,46 @@ class Page extends Base
     public function bill()
     {
         // 钱包
+        $this->getUser();
+
+        $userState = UserState::where('user_id', $this->uid)
+            ->field('user_id,balance,point')
+            ->find();
+
+        Common::res(['data' => [
+            'user_id' => $userState['user_id'],
+            'balance' => $userState['balance'],
+            'point' => $userState['point']
+        ]]);
     }
 
     public function qrCode()
     {
         // 我的二维码
+        $this->getUser();
+
+        $userState = UserState::where('user_id', $this->uid)
+            ->field('user_id,qrcode')
+            ->find();
+
+        Common::res(['data' => [
+            'user_id' => $userState['user_id'],
+            'qrcode' => $userState['qrcode']
+        ]]);
     }
 
     public function withdrawLog()
     {
         // 提现记录
+        $this->getUser();
+        $page = input('page', 1);
+        $size = input('size', 10);
+
+        $list = UserBill::where('user_id', $this->uid)
+            ->where('type', UserBill::WITHDRAW)
+            ->page($page, $size)
+            ->select();
+
+        Common::res(['data' => $list]);
     }
 }
