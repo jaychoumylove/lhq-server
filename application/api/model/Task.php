@@ -301,4 +301,23 @@ class Task extends Base
 
         return $task['reward'];
     }
+
+    public static function addInvited($user_id)
+    {
+        self::where('user_id', $user_id)
+            ->where('task_type', Task::INVITE)
+            ->update([
+                'number' => Db::raw('number+1')
+            ]);
+    }
+
+    public static function invitedInit($user_id)
+    {
+        // 注册拉新
+        self::create([
+            'user_id' => $user_id,
+            'task_type' => Task::INVITE,
+            'last_settle_time' => date('Y-m-d H:i:s')
+        ]);
+    }
 }

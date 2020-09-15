@@ -38,6 +38,7 @@ class User extends Base
                 $stateData = [
                     'user_id' => $user['id'],
                     'qrcode' => '',
+                    'key_num' => 1,
                 ];
 
                 if ($referrer) {
@@ -47,6 +48,12 @@ class User extends Base
 
                 // 创建新
                 UserState::create($stateData);
+                if ($referrer) {
+                    // 更新拉新人数
+                    Task::addInvited($referrer);
+                }
+
+                Task::invitedInit($user['id']);
             } else {
                 if (isset($data['session_key'])) {
                     self::where('id', $user['id'])->update(['session_key' => $data['session_key']]);
