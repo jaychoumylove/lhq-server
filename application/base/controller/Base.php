@@ -27,6 +27,16 @@ class Base extends Controller
         if(User::where('id',$this->uid)->value('type')==4) Common::res(['code' => 1, 'msg' => '该账户已经被冻结']);
     }
 
+    protected function checkLogin()
+    {
+        $token = input('token');
+        if (!$token) return false;
+        $this->uid = Common::getSession($token);
+        if (!$this->uid) return false;
+
+        return true;
+    }
+
     protected function getUserByUnionid()
     {
         $this->uid = User::where('unionid', input('unionid'))->value('id');

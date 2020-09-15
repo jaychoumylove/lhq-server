@@ -3,7 +3,11 @@
 namespace app\api\controller\v1;
 
 
+use app\api\model\Lottery;
+use app\api\model\LotteryLog;
+use app\api\model\UserState;
 use app\base\controller\Base;
+use app\base\service\Common;
 
 class Page extends Base
 {
@@ -13,6 +17,38 @@ class Page extends Base
         // 奖池奖品信息
         // 抽取日志
         // 排行Top3
+        $login = $this->checkLogin();
+        $userState = null;
+        $user = null;
+        if ($login) {
+            $userState = UserState::get(['user_id' => $this->uid]);
+            $user = \app\api\model\User::get($this->uid);
+        }
+
+        $lottery = Lottery::order([
+                'index' => 'asc',
+                'create_time' => 'desc'
+            ])
+            ->select();
+
+        $log = LotteryLog::order('create_time', 'desc')
+            ->limit(6)
+            ->select();
+
+        $top = UserState::order([
+                'point' => 'desc',
+                'update_time' => 'asc'
+            ])
+            ->limit(3)
+            ->select();
+
+        Common::res(['data' => [
+            'log' => $log,
+            'lottery' => $lottery,
+            'top' => $top,
+            'user_state' => $userState,
+            'user' => $user
+        ]]);
     }
 
     public function friendRank()
@@ -20,6 +56,8 @@ class Page extends Base
         // 裂变
         // 个人贡献信息
         // 好友贡献排行
+
+        $type = input();
     }
 
     public function rank()
