@@ -15,4 +15,9 @@ class Bill extends \app\base\controller\Base
     {
         // 抽奖
     }
+
+    public function doubleLottery()
+    {
+        // 双倍抽奖埋点
+    }
 }

@@ -28,6 +28,7 @@ Route::rule('api/:version/page/withdraw_log', 'api/v1.Page/withdrawLog');
 
 
 Route::rule('api/:version/bill/lottery', 'api/v1.Bill/lottery'); // 抽奖
+Route::rule('api/:version/bill/double', 'api/v1.Bill/doubleLottery'); // 抽奖埋点
 Route::rule('api/:version/bill/withdraw', 'api/v1.Bill/withdraw'); // 发起提现
 
 // User
