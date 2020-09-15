@@ -20,7 +20,7 @@ class User extends Base
     {
         // 登录code 小程序 公众号H5
         $code = $this->req('code');
-
+        $referrer = (int) input('referrer', 0);
         $res['platform'] = $this->req('platform', 'require', 'MP-WEIXIN'); // 平台
         $res['model'] = $this->req('model'); // 手机型号
 
@@ -31,7 +31,11 @@ class User extends Base
             $res['openid'] = $this->req('openid');
         }
 
-        $uid = UserModel::searchUser($res);
+        if ($referrer) {
+            $uid = UserModel::searchUser($res, $referrer);
+        } else {
+            $uid = UserModel::searchUser($res);
+        }
         $token = Common::setSession($uid);
 
         Common::res(['msg' => '登录成功', 'data' => ['token' => $token, 'package' => $res]]);

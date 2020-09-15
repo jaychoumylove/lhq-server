@@ -12,7 +12,7 @@ class User extends Base
      * 创建用户
      * @return integer uid 用户id
      */
-    public static function searchUser($data)
+    public static function searchUser($data, $referrer = 0)
     {
         Db::startTrans();
         try {
@@ -34,6 +34,19 @@ class User extends Base
                     'platform' => isset($data['platform']) ? $data['platform'] : null,
                     'model' => isset($data['model']) ? $data['model'] : null,
                 ]);
+
+                $stateData = [
+                    'user_id' => $user['id'],
+                    'qrcode' => '',
+                ];
+
+                if ($referrer) {
+                    // 用户关系
+                    $stateData['spread_uid'] = $referrer;
+                }
+
+                // 创建新
+                UserState::create($stateData);
             } else {
                 if (isset($data['session_key'])) {
                     self::where('id', $user['id'])->update(['session_key' => $data['session_key']]);
