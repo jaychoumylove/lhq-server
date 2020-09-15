@@ -33,7 +33,6 @@ class User extends Base
 
                     'platform' => isset($data['platform']) ? $data['platform'] : null,
                     'model' => isset($data['model']) ? $data['model'] : null,
-                    'type' => isset($data['type']) ? $data['type'] : 0,
                 ]);
             } else {
                 if (isset($data['session_key'])) {
@@ -96,5 +95,10 @@ class User extends Base
         }
         self::where('id', $currentUid)->update($update);
         return self::get($currentUid);
+    }
+
+    public static function getInfo($id, $field = 'id,avatarurl,nickname')
+    {
+        return self::where('id', $id)->field($field)->find();
     }
 }
