@@ -108,6 +108,11 @@ class UserBill extends Base
             if ($state['spread_uid'] > 0) {
                UserState::changePointWithSpread($state['spread_uid'], $number);
             }
+            // 写入抽奖日志
+            LotteryLog::create([
+                'user_id' => $uid,
+                'reward' => json_encode($item['reward'])
+            ]);
 
             Db::commit();
         } catch (\Throwable $throwable) {
