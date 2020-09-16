@@ -39,5 +39,8 @@ Route::rule('api/:version/user/saveinfo', 'api/v1.User/saveInfo');// 保存用�
 Route::rule('api/:version/user/savephone', 'api/v1.User/savePhone');// 保存用户详细信息
 Route::rule('api/:version/user/info', 'api/v1.User/getInfo');// 获取用户详细信息
 
+//UserRank
+Route::rule('api/:version/user/pointRankInfo', 'api/v1.UserRank/pointRankInfo');// 用户积分排名信息
+
 // Task
 Route::rule('api/:version/task/settle', 'api/v1.Task/settle');// 完成任务
