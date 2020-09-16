@@ -33,6 +33,7 @@ class User extends Base
 
                     'platform' => isset($data['platform']) ? $data['platform'] : null,
                     'model' => isset($data['model']) ? $data['model'] : null,
+                    "nickname" => "神秘人"
                 ]);
 
                 $stateData = [

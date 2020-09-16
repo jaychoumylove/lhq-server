@@ -28,6 +28,7 @@ use app\api\model\RecTask;
 use app\api\model\BadgeUser;
 use app\api\model\FanclubUser;
 use app\api\model\RecPayOrder;
+use think\File;
 use think\Response;
 
 class Test extends Base
@@ -66,29 +67,24 @@ class Test extends Base
         $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
         if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
         $getQrcode   = base64_encode($getQrcode);
-        $qrcode = 'data:image/png;base64,'.$getQrcode;
-        Common::res(['data' => [
-            's' => $qrcode,
-            'o' => $getQrcode,
-        ]]);
+//        fopen($getQrcode);
+//
+//        Common::res(['data' => [
+//            's' => $qrcode,
+//            'o' => $getQrcode,
+//        ]]);
     }
 
-    public function uploadwX()
+    public function uploadwX($file)
     {
-        $file = request()->file('file');
-        if ($file) {
-            $size = $file->getSize ();
-            $resize = bcdiv ($size, pow (1024, 2), 2);
-            if ($resize > 1) {
-                Common::res (['code' => 1, 'msg' => "大小超过1mb限制"]);
-            }
-            $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
-            $filename = $info->getSaveName();
-            $realPath = ROOT_PATH . 'public' . DS . 'uploads' . DS . $filename;
-        } else {
-            // 上传失败获取错误信息
-            echo $file->getError();
+        $size = $file->getSize ();
+        $resize = bcdiv ($size, pow (1024, 2), 2);
+        if ($resize > 1) {
+            Common::res (['code' => 1, 'msg' => "大小超过1mb限制"]);
         }
+        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
+        $filename = $info->getSaveName();
+        $realPath = ROOT_PATH . 'public' . DS . 'uploads' . DS . $filename;
 
         // 上传到微信
         $gzh_appid = Appinfo::where(['type' => 'gzh','status'=>0])->value('appid');
@@ -102,7 +98,6 @@ class Test extends Base
 
         //获取到地址才返回
         if(isset($res['url'])){
-
             $res['https_url'] = str_replace('http', 'https', $res['url']);
             unlink($realPath);
             Common::res(['data' => $res]);
