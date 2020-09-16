@@ -30,15 +30,15 @@ class Page extends Base
         $userState = UserState::get(['user_id' => $this->uid]);
         $user = \app\api\model\User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
 
-        $lottery = Lottery::with(['user'])
-            ->order([
+        $lottery = Lottery::order([
                 'index' => 'asc',
                 'create_time' => 'desc'
             ])
             ->field('reward,index')
             ->select();
 
-        $log = LotteryLog::order('create_time', 'desc')
+        $log = LotteryLog::with(['user'])
+            ->order('create_time', 'desc')
             ->limit(6)
             ->select();
 
