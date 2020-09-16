@@ -17,7 +17,8 @@ Route::rule('api/:version/auto/m', 'api/v1.AutoRun/monthHandle');// 每月定期
 Route::rule('api/:version/notify/receive', 'api/v1.Notify/receive');// 客服消息推送
 Route::rule('api/:version/notify/auth', 'api/v1.Notify/getAuth');// 
 
-// Page 
+// Page
+Route::rule('api/:version/page/app', 'api/v1.Page/app');
 Route::rule('api/:version/page/index', 'api/v1.Page/index');
 Route::rule('api/:version/page/friend_rank', 'api/v1.Page/friendRank');
 Route::rule('api/:version/page/rank', 'api/v1.Page/rank');

@@ -3,7 +3,9 @@
 namespace app\api\controller\v1;
 
 
+use app\api\model\Cfg;
 use app\api\model\CfgNovel;
+use app\api\model\CfgShare;
 use app\api\model\Lottery;
 use app\api\model\LotteryLog;
 use app\api\model\UserBill;
@@ -14,6 +16,15 @@ use app\base\service\Common;
 
 class Page extends Base
 {
+    public function app()
+    {
+        $res = [];
+        $res['config'] = Cfg::getList();
+        $res['share'] = CfgShare::all();
+
+        Common::res(['data' => $res]);
+    }
+
     public function index()
     {
         // 首页
