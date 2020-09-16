@@ -156,22 +156,27 @@ class Page extends Base
 
     public function rank()
     {
+        $this->getUser();
         // 排行 20名 积分desc
-        $list = UserState::with(['user'])
-            ->field('point,pure_point,id,user_id')
+        $page = input('page', 1);
+        $size = input('size', 20);
+        $res['rankInfo'] = [];
+        $res['list'] = UserState::with(['user'])
+            ->field('point,pure_point,id,user_id,update_time')
             ->order([
                 'point' => 'desc',
                 'pure_point' => 'desc',
                 'update_time' => 'desc'
             ])
-            ->limit(20)
+            ->page($page, $size)
             ->select();
 
-        if (is_object($list)) $list = $list->toArray();
+        if (is_object($res['list'])) $res['list'] = $res['list']->toArray();
+        $res['myInfo'] = User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
+        $res['myInfo']['point'] = UserState::where(['user_id' => $this->uid])->value('point');
+        $res['myInfo']['rank'] = (UserState::where('point', '>', $res['myInfo']['point'])->field('point,pure_point,id,user_id,update_time')->order(['point' => 'desc', 'pure_point' => 'desc', 'update_time' => 'desc'])->count()) + 1;
 
-        Common::res(['data' => [
-            'list' => $list
-        ]]);
+        Common::res(['data' => $res]);
     }
 
     public function userInfo()
