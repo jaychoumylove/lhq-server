@@ -58,7 +58,7 @@ class Task extends Base
         $currentDate = date('Y-m-d H:i:s', $currentTime);
         if ($userTask) {
             $number = $userTask['number'];
-            if (date('Ymd', $userTask['last_settle_time']) == date('Ymd', $currentTime)) {
+            if (date('Ymd', strtotime($userTask['last_settle_time'])) == date('Ymd', $currentTime)) {
                 Common::res(['code' => 1, 'msg' => '你今天已经签到了']);
             }
         }

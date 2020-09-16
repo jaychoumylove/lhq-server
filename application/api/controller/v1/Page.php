@@ -199,6 +199,7 @@ class Page extends Base
                 $signAble = true;
                 $signCurrent = bcadd($userSignTask['number'], 1);
             } else {
+                $signAble = false;
                 $signCurrent = $userSignTask['number'];
             }
         }
