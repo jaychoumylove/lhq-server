@@ -152,7 +152,7 @@ class Task extends Base
             }
 
             $keyNum       = $task['reward']['key_num'];
-            $rewardKeyNum = bcmul($keyNum, $userTask['number']);
+            $rewardKeyNum = (int)bcmul($keyNum, $userTask['number']);
             UserState::where('user_id', $user_id)->update([
                 'key_num' => Db::raw('key_num+' . $rewardKeyNum)
             ]);
@@ -223,7 +223,7 @@ class Task extends Base
             }
 
             $keyNum       = $task['reward']['key_num'];
-            $rewardKeyNum = bcmul($keyNum, $userTask['number']);
+            $rewardKeyNum = (int)bcmul($keyNum, $userTask['number']);
             UserState::where('user_id', $user_id)->update([
                 'key_num' => Db::raw('key_num+' . $rewardKeyNum)
             ]);
