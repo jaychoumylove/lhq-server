@@ -67,6 +67,50 @@ class Test extends Base
         if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
         $getQrcode   = base64_encode($getQrcode);
         $qrcode = 'data:image/png;base64,'.$getQrcode;
-        Common::res(['data' => $qrcode]);
+        Common::res(['data' => [
+            's' => $qrcode,
+            'o' => $getQrcode,
+        ]]);
+    }
+
+    public function uploadwX()
+    {
+        $file = request()->file('file');
+        if ($file) {
+            $size = $file->getSize ();
+            $resize = bcdiv ($size, pow (1024, 2), 2);
+            if ($resize > 1) {
+                Common::res (['code' => 1, 'msg' => "大小超过1mb限制"]);
+            }
+            $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
+            $filename = $info->getSaveName();
+            $realPath = ROOT_PATH . 'public' . DS . 'uploads' . DS . $filename;
+        } else {
+            // 上传失败获取错误信息
+            echo $file->getError();
+        }
+
+        // 上传到微信
+        $gzh_appid = Appinfo::where(['type' => 'gzh','status'=>0])->value('appid');
+        if(!$gzh_appid) Common::res(['code' => 1, 'msg' => '图片服务器不可用，请联系客服']);
+
+        $res = (new WxAPI($gzh_appid))->uploadimg($realPath);
+        if (isset($res['errcode']) && $res['errcode'] == 45009){//公众号达到日极限
+            Appinfo::where(['appid' => $gzh_appid])->update(['status'=>-1]);
+            Common::res(['code' => 1, 'msg' => '上传失败，请重试一次']);
+        }
+
+        //获取到地址才返回
+        if(isset($res['url'])){
+
+            $res['https_url'] = str_replace('http', 'https', $res['url']);
+            unlink($realPath);
+            Common::res(['data' => $res]);
+        }
+
+        if (isset($res['errcode']) && $res['errcode'] != 45009) {
+
+        }
+        Common::res(['code' => 1, 'msg' => '上传图片失败，请联系客服']);
     }
 }

@@ -13,7 +13,7 @@ class AutoRun extends \app\base\controller\Base
 
     public function dayHandle()
     {
-        
+        //
     }
 
     public function weekHandle()
