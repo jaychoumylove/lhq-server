@@ -25,6 +25,7 @@ Route::rule('api/:version/page/user_info', 'api/v1.Page/userInfo');
 Route::rule('api/:version/page/bill', 'api/v1.Page/bill');
 Route::rule('api/:version/page/qrcode', 'api/v1.Page/qrCode');
 Route::rule('api/:version/page/withdraw_log', 'api/v1.Page/withdrawLog');
+Route::rule('api/:version/ad/custom', 'api/v1.Page/customAd');
 
 
 Route::rule('api/:version/bill/lottery', 'api/v1.Bill/lottery'); // 抽奖
