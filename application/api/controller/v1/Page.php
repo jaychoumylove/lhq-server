@@ -292,12 +292,13 @@ class Page extends Base
         $this->getUser();
 
         $userState = UserState::where('user_id', $this->uid)
-            ->field('user_id,balance,point')
+            ->field('user_id,balance,freeze_balance,point')
             ->find();
 
         Common::res(['data' => [
             'user_id' => $userState['user_id'],
             'balance' => $userState['balance'],
+            'freeze_balance' => $userState['freeze_balance'],
             'point' => $userState['point']
         ]]);
     }
