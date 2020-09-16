@@ -123,7 +123,7 @@ class UserBill extends Base
         return [
             'index'  => $item['index'],
             'number' => $number,
-            'reward' => $item['reward']
+            'reward' => array_merge($item['reward'], ['desc' => '贝壳'.$number])
         ];
     }
 }
