@@ -75,7 +75,7 @@ class Task extends Base
         try {
             // 吸入任务记录
             // 更新用户钥匙、积分
-            if ($userTask) {
+            if (empty($userTask)) {
                 UserTask::create([
                     'user_id'          => $user_id,
                     'task_type'        => Task::SIGN,
@@ -200,7 +200,7 @@ class Task extends Base
 
         Db::startTrans();
         try {
-            if ($userTask) {
+            if (empty($userTask)) {
                 UserTask::create([
                     'user_id'          => $user_id,
                     'task_type'        => Task::DAY_KEY,
@@ -266,7 +266,7 @@ class Task extends Base
 
         Db::startTrans();
         try {
-            if ($userTask) {
+            if (empty($userTask)) {
                 UserTask::create([
                     'user_id'          => $user_id,
                     'task_type'        => Task::VIDEO_KEY,
