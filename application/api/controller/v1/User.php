@@ -128,7 +128,7 @@ class User extends Base
             $uid = $this->uid;
         }
 
-        $res = UserModel::where('id', $uid)->field('id,nickname,avatarurl,type,phoneNumber')->find();
+        $res = UserModel::where('id', $uid)->field('id,nickname,avatarurl,phoneNumber')->find();
 
         // 粉丝团
         Common::res(['data' => $res]);

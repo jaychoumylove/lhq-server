@@ -25,7 +25,7 @@ class Page extends Base
         $res['config']['share'] = CfgShare::all();
         $res['user_info'] = User::where([
             'id' => $this->uid
-        ])->field('id,nickname,avatarurl,type,phoneNumber')->find();
+        ])->field('id,nickname,avatarurl,phoneNumber')->find();
 
         Common::res(['data' => $res]);
     }
