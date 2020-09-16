@@ -30,6 +30,7 @@ class Common
 
         Db::rollback(); // 怀疑可能出现开启事务后不提交也不回滚的情况
         header('Access-Control-Allow-Origin:*');
+        http_response_code(200);
         header('Content-Type:application/json');
         die(json_encode($return, JSON_UNESCAPED_UNICODE));
     }

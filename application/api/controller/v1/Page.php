@@ -19,13 +19,15 @@ class Page extends Base
         // 奖池奖品信息
         // 抽取日志
         // 排行Top3
-        $login = $this->checkLogin();
-        $userState = null;
-        $user = null;
-        if ($login) {
-            $userState = UserState::get(['user_id' => $this->uid]);
-            $user = \app\api\model\User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
-        }
+//        $login = $this->checkLogin();
+//        $userState = null;
+//        $user = null;
+//        if ($login) {
+//        }
+
+        $this->getUser();
+        $userState = UserState::get(['user_id' => $this->uid]);
+        $user = \app\api\model\User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
 
         $lottery = Lottery::order([
                 'index' => 'asc',
@@ -60,18 +62,18 @@ class Page extends Base
         // 好友贡献排行
         $page = input('page', 1);
         $size = input('size', 10);
-        $state =  [
-            'sum' => 0,
-            'first' => 0,
-            'second' => 0
-        ];
-        $login = $this->checkLogin();
-        if (empty($login)) {
-            Common::res(['data' => [
-                'state' => $state,
-                'list' => []
-            ]]);
-        }
+//        $state =  [
+//            'sum' => 0,
+//            'first' => 0,
+//            'second' => 0
+//        ];
+//        $login = $this->checkLogin();
+//        if (empty($login)) {
+//            Common::res(['data' => [
+//                'state' => $state,
+//                'list' => []
+//            ]]);
+//        }
 
         $this->getUser();
 
@@ -160,10 +162,10 @@ class Page extends Base
         // 积分，钱包
         // 签到任务完成情况
         // 其余钥匙任务
-        $login = $this->checkLogin();
-        if (empty($login)) {
-            Common::res();
-        }
+//        $login = $this->checkLogin();
+//        if (empty($login)) {
+//            Common::res();
+//        }
 
         $this->getUser();
         $userInfo = \app\api\model\User::getInfo($this->uid);
