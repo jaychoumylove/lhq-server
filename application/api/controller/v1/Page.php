@@ -33,6 +33,7 @@ class Page extends Base
                 'index' => 'asc',
                 'create_time' => 'desc'
             ])
+            ->field('reward,index')
             ->select();
 
         $log = LotteryLog::order('create_time', 'desc')
