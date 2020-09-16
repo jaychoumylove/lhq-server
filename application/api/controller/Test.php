@@ -7,6 +7,8 @@ use app\api\model\AnimalLottery;
 use app\api\model\CfgAnimal;
 use app\api\model\CfgAnimalLevel;
 use app\base\controller\Base;
+use app\base\model\Appinfo;
+use app\base\service\WxAPI;
 use Exception;
 use think\Db;
 use app\base\service\Common;
@@ -39,5 +41,32 @@ class Test extends Base
     public function getUid()
     {
         echo Common::getSession(input('token'));
+    }
+
+    public function getUserQrCode()
+    {
+        $this->getUser();
+//        $qrcode = UserState::where('user_id', $this->uid)->value('qrcode');
+//        if (!$qrcode) {
+//            if (Appinfo::where(['id' => 1])->value('access_token_expire') < date('Y-m-d H:i:s')) {
+//                (new WxAPI())->getAccessToken();
+//            }
+//            $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
+//            if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
+//            $getQrcode   = base64_encode($getQrcode);
+//            $qrcode = 'data:image/png;base64,'.$getQrcode;
+//            UserState::where('user_id', $this->uid)->update([
+//                'qrcode'=>$qrcode
+//            ]);
+//        }
+
+        if (Appinfo::where(['id' => 1])->value('access_token_expire') < date('Y-m-d H:i:s')) {
+            (new WxAPI())->getAccessToken();
+        }
+        $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
+        if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
+        $getQrcode   = base64_encode($getQrcode);
+        $qrcode = 'data:image/png;base64,'.$getQrcode;
+        Common::res(['data' => $qrcode]);
     }
 }

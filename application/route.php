@@ -5,6 +5,7 @@ use think\Route;
 // Test
 Route::rule('getToken', 'api/Test/getToken');
 Route::rule('getUid', 'api/Test/getUid');
+Route::rule('getqrcode', 'api/Test/getUserQrCode');
 
 // AutoRun 
 Route::rule('api/:version/auto', 'api/v1.AutoRun/index');// 定时任务
