@@ -8,6 +8,7 @@ use app\api\model\CfgNovel;
 use app\api\model\CfgShare;
 use app\api\model\Lottery;
 use app\api\model\LotteryLog;
+use app\api\model\User;
 use app\api\model\UserBill;
 use app\api\model\UserState;
 use app\api\model\UserTask;
@@ -18,9 +19,13 @@ class Page extends Base
 {
     public function app()
     {
+        $this->getUser();
         $res = [];
         $res['config'] = Cfg::getList();
-        $res['share'] = CfgShare::all();
+        $res['config']['share'] = CfgShare::all();
+        $res['user_info'] = User::where([
+            'id' => $this->uid
+        ])->field('id,nickname,avatarurl,type,phoneNumber')->find();
 
         Common::res(['data' => $res]);
     }
