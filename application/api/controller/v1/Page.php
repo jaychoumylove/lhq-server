@@ -30,7 +30,8 @@ class Page extends Base
         $userState = UserState::get(['user_id' => $this->uid]);
         $user = \app\api\model\User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
 
-        $lottery = Lottery::order([
+        $lottery = Lottery::with(['user'])
+            ->order([
                 'index' => 'asc',
                 'create_time' => 'desc'
             ])
