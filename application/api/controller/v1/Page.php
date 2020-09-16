@@ -236,8 +236,9 @@ class Page extends Base
 
                 if ($item['type'] == \app\api\model\Task::DAY_KEY) {
                     $lastSettle = strtotime($task['last_settle_time']);
-                    $diff = bcsub($currentTime, $lastSettle);
-                    $ableSettle = $diff > $item['reward']['second'];
+                    $diff = (int)bcsub($currentTime, $lastSettle);
+                    $ableSettle = $diff >= $item['reward']['second'];
+                    $item['seconds'] = $ableSettle ? 0: $diff;
                 }
 
                 if ($item['type'] == \app\api\model\Task::VIDEO_KEY) {

@@ -19,6 +19,11 @@ class Task extends Base
         return json_decode($value, true);
     }
 
+    public function getExtraAttr($value)
+    {
+        return json_decode($value, true);
+    }
+
     public static function settle($user_id, $type)
     {
         $typeList = Task::column('type');
