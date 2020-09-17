@@ -350,6 +350,7 @@ class Page extends Base
         $size = input('size', 10);
 
         $list = Rec::where('user_id', $this->uid)
+            ->order('create_time desc')
             ->page($page, $size)
             ->select();
 

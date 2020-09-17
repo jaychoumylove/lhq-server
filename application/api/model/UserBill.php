@@ -4,6 +4,7 @@
 namespace app\api\model;
 
 
+use app\api\service\User as UserService;
 use app\base\model\Base;
 use app\base\service\Common;
 use think\Db;
@@ -13,6 +14,13 @@ class UserBill extends Base
 {
     const WITHDRAW = 'WITHDRAW';
 
+    /**
+     * @param $user_id
+     * @param $number
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function withdraw($user_id, $number)
     {
         $state = UserState::where('user_id', $user_id)->find();
@@ -64,6 +72,13 @@ class UserBill extends Base
         }
     }
 
+    /**
+     * @param $uid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function lottery($uid)
     {
         // 抽奖
@@ -80,7 +95,6 @@ class UserBill extends Base
         Db::startTrans();
         try {
             //
-            $leftKeyNum    = bcsub($keyNum, 1);
             $number        = $item['number'];
             $doubleLottery = false;
             if ($state['double_lottery'] > 0) {
@@ -89,24 +103,16 @@ class UserBill extends Base
                 $doubleLottery = true;
             }
 
-            $update = [
-                'key_num'    => $leftKeyNum,
-                'point'      => bcadd($state['point'], $number),
-                'pure_point' => bcadd($state['pure_point'], $number)
-            ];
-
+            $update = ['key_num' => -1 ,'point' => $number, 'pure_point' => $number,];
             if ($doubleLottery) {
-                $update['double_lottery'] = bcsub($state['double_lottery'], 1);
+                $update['double_lottery'] = -1;
             }
 
-            $updated = UserState::where('id', $state['id'])->update($update);
-            if (empty($updated)) {
-                Common::res(['code' => 1, 'msg' => '更新状态出错']);
-            }
+            (new UserService())->change($uid,$update,['type' => 1, 'content' => '消耗钥匙抽奖获得']);
 
             // 是否有上级
             if ($state['spread_uid'] > 0) {
-               UserState::changePointWithSpread($state['spread_uid'], $number);
+               UserState::changePointWithSpread($uid,$state['spread_uid'], $number);
             }
             // 写入抽奖日志
             LotteryLog::create([
