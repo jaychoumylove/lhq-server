@@ -108,7 +108,7 @@ class Task extends Base
             (new UserService())->change($user_id,[
                 'point'      => $point,
                 'pure_point' => $point
-            ],['type' => 1, 'content' => '每日签到积分']);
+            ],['type' => 1, 'content' => '每日签到贝壳']);
 
 
             Db::commit();
