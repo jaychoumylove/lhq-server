@@ -22,7 +22,10 @@ class Page extends Base
         $this->getUser();
         $res = [];
         $res['config'] = Cfg::getList();
-        $res['config']['share'] = CfgShare::all();
+        $share = CfgShare::all();
+        $share = collection($share)->toArray();
+        $shareDict = array_column($share, null, 'id');
+        $res['config']['share'] = $shareDict;
         $res['user_info'] = User::where([
             'id' => $this->uid
         ])->field('id,nickname,avatarurl,phoneNumber')->find();
