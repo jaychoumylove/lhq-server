@@ -66,26 +66,19 @@ class Test extends Base
         }
         $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
         if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
-        $getQrcode   = base64_encode($getQrcode);
-//        fopen($getQrcode);
-//
-//        Common::res(['data' => [
-//            's' => $qrcode,
-//            'o' => $getQrcode,
-//        ]]);
+//        $getQrcode   = base64_encode($getQrcode);
+//        $qrcode = 'data:image/png;base64,'.$getQrcode;
+//        $image_parts = explode(";base64,", $qrcode);
+//        $image_type_aux = explode("image/", $image_parts[0]);
+//        $image_type = $image_type_aux[1];
+//        $image_base64 = base64_decode($image_parts[1]);
+        $file = ROOT_PATH . 'public' . DS . 'uploads' . DS . uniqid() . '.png';
+        file_put_contents($file, $getQrcode);
+        $this->uploadwX($file);
     }
 
-    public function uploadwX($file)
+    public function uploadwX($realPath)
     {
-        $size = $file->getSize ();
-        $resize = bcdiv ($size, pow (1024, 2), 2);
-        if ($resize > 1) {
-            Common::res (['code' => 1, 'msg' => "大小超过1mb限制"]);
-        }
-        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
-        $filename = $info->getSaveName();
-        $realPath = ROOT_PATH . 'public' . DS . 'uploads' . DS . $filename;
-
         // 上传到微信
         $gzh_appid = Appinfo::where(['type' => 'gzh','status'=>0])->value('appid');
         if(!$gzh_appid) Common::res(['code' => 1, 'msg' => '图片服务器不可用，请联系客服']);
@@ -103,9 +96,5 @@ class Test extends Base
             Common::res(['data' => $res]);
         }
 
-        if (isset($res['errcode']) && $res['errcode'] != 45009) {
-
-        }
-        Common::res(['code' => 1, 'msg' => '上传图片失败，请联系客服']);
     }
 }
