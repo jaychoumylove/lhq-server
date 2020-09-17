@@ -108,6 +108,13 @@ class Task extends Base
 
             $point = $task['reward']['point'];
 
+            $state  = UserState::get(['user_id' => $user_id]);
+
+            // 是否有上级
+            if ($state['spread_uid'] > 0) {
+                UserState::changePointWithSpread($user_id,$state['spread_uid'], $number);
+            }
+
             (new UserService())->change($user_id,[
                 'point'      => $point,
                 'pure_point' => $point
