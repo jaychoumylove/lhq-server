@@ -5,6 +5,7 @@ namespace app\api\controller\v1;
 
 
 use app\api\model\Lock;
+use app\api\model\Rec;
 use app\api\model\UserState;
 use app\api\model\UserTask;
 use think\Db;
@@ -58,9 +59,30 @@ class AutoRun extends \app\base\controller\Base
                 ->update(['number' => 0]);
 
             // 积分转化成余额
+            // 加入日志
+            $userState = UserState::where('point', '>=', 3000)->select();
+            if (is_object($userState)) $userState = $userState->toArray();
+            $insertRec = [];
+            foreach ($userState as $key => $value) {
+                $number = bcdiv($value['point'], 10000, 1);
+                $changeNumber = bcmul($number, 10000);
+//                $left = bcsub($value['point'], $changeNumber);
+                $item = [
+                    'user_id' => $value['user_id'],
+                    'content' => '每日积分换算',
+                    'type' => 1,
+                    'point' => -$changeNumber,
+                    'before_point' => $value['point']
+                ];
+
+                array_push($insertRec, $item);
+            }
+
+            (new Rec())->insertAll($insertRec);
+
             UserState::where('point', '>=', 3000)
                 ->update([
-                    'balance' => Db::raw('`balance` + ((`point` div 1000) * 1)'),
+                    'balance' => Db::raw('`balance` + ((`point` div 1000) * 0.1)'),
                     'point' => Db::raw('`point` - ((`point` div 1000)*1000)'),
                 ]);
 
