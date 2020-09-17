@@ -74,6 +74,7 @@ class Page extends Base
             'lottery' => $lottery,
             'top' => $top,
             'key_num' => $userState['key_num'],
+            'lucky_num' => $userState['lucky_num'],
             'user' => $user
         ]]);
     }

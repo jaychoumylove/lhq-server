@@ -298,6 +298,10 @@ class Task extends Base
                 'key_num' => $rewardKeyNum,
             ],['type' => 2, 'content' => '观看视频领取钥匙']);
 
+            UserState::where('user_id', $user_id)->update([
+                'lucky_num'=>Db::raw('lucky_num+1')
+            ]);
+
             Db::commit();
         } catch (\Throwable $throwable) {
             Db::rollback();

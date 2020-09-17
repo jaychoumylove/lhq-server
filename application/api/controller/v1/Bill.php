@@ -40,6 +40,10 @@ class Bill extends \app\base\controller\Base
         // 双倍抽奖埋点
         $this->getUser();
         $state = UserState::where('user_id', $this->uid)->find();
+
+        UserState::where('user_id', $this->uid)->update([
+            'lucky_num'=>bcadd($state['lucky_num'], 1)
+        ]);
         $updated = UserState::where('user_id', $this->uid)
             ->where('double_lottery', $state['double_lottery'])
             ->update([
