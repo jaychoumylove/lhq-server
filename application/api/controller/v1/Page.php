@@ -8,6 +8,7 @@ use app\api\model\CfgNovel;
 use app\api\model\CfgShare;
 use app\api\model\Lottery;
 use app\api\model\LotteryLog;
+use app\api\model\Rec;
 use app\api\model\User;
 use app\api\model\UserBill;
 use app\api\model\UserState;
@@ -335,6 +336,21 @@ class Page extends Base
 
         $list = UserBill::where('user_id', $this->uid)
             ->where('type', UserBill::WITHDRAW)
+            ->page($page, $size)
+            ->select();
+
+        Common::res(['data' => $list]);
+    }
+
+    public function log()
+    {
+        // 明细记录
+        $this->getUser();
+        $page = input('page', 1);
+        $size = input('size', 10);
+
+        $list = Rec::where('user_id', $this->uid)
+            ->order('create_time desc')
             ->page($page, $size)
             ->select();
 

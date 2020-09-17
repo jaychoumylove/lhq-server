@@ -2,6 +2,7 @@
 
 namespace app\api\model;
 
+use app\api\service\User as UserService;
 use app\base\model\Base;
 use app\base\service\Common;
 use think\Db;
@@ -104,17 +105,11 @@ class Task extends Base
 
             $point = $task['reward']['point'];
 
-            $userState = UserState::get(['user_id' => $user_id]);
-            $update    = [
-                'point'      => bcadd($userState['point'], $point),
-                'pure_point' => bcadd($userState['pure_point'], $point)
-            ];
-            $updated   = UserState::where('id', $userState['id'])->update($update);
-            if (empty($updated)) {
-                Common::res(['code' => 1, 'msg' => '更新贝壳出错']);
-            }
+            (new UserService())->change($user_id,[
+                'point'      => $point,
+                'pure_point' => $point
+            ],['type' => 1, 'content' => '每日签到积分']);
 
-//            UserState::changePoint($user_id, $task['reward']['point']);
 
             Db::commit();
         } catch (\Throwable $throwable) {
@@ -158,9 +153,10 @@ class Task extends Base
 
             $keyNum       = $task['reward']['key_num'];
             $rewardKeyNum = (int)bcmul($keyNum, $userTask['number']);
-            UserState::where('user_id', $user_id)->update([
-                'key_num' => Db::raw('key_num+' . $rewardKeyNum)
-            ]);
+
+            (new UserService())->change($user_id,[
+                'key_num' => $rewardKeyNum,
+            ],['type' => 2, 'content' => '邀请好友奖励']);
 
             Db::commit();
         } catch (\Throwable $throwable) {
@@ -228,9 +224,10 @@ class Task extends Base
             }
 
             $rewardKeyNum = (int)$task['reward']['key_num'];
-            UserState::where('user_id', $user_id)->update([
-                'key_num' => Db::raw('key_num+' . $rewardKeyNum)
-            ]);
+
+            (new UserService())->change($user_id,[
+                'key_num' => $rewardKeyNum,
+            ],['type' => 2, 'content' => '每日免费领取钥匙']);
 
             Db::commit();
         } catch (\Throwable $throwable) {
@@ -293,9 +290,10 @@ class Task extends Base
             }
 
             $rewardKeyNum = $task['reward']['key_num'];
-            UserState::where('user_id', $user_id)->update([
-                'key_num' => Db::raw('key_num+' . $rewardKeyNum)
-            ]);
+
+            (new UserService())->change($user_id,[
+                'key_num' => $rewardKeyNum,
+            ],['type' => 2, 'content' => '观看视频领取钥匙']);
 
             Db::commit();
         } catch (\Throwable $throwable) {
