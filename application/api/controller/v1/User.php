@@ -144,15 +144,38 @@ class User extends Base
             }
             $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
             if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
-            $getQrcode   = base64_encode($getQrcode);
-            $qrcode = 'data:image/png;base64,'.$getQrcode;
-            UserState::where('user_id', $this->uid)->update([
-                'qrcode'=>$qrcode
-            ]);
+            $filePath = ROOT_PATH . 'public' . DS . 'uploads' . DS . uniqid() . '.png';
+            file_put_contents($filePath, $getQrcode);
+            $url = $this->uploadwX($filePath);
+            if ($url) {
+                UserState::where('user_id', $this->uid)->update([
+                    'qrcode'=>$url
+                ]);
+            } else {
+                $getQrcode   = base64_encode($getQrcode);
+                $qrcode = 'data:image/png;base64,'.$getQrcode;
+            }
         }
 
-        Common::res(['data' => $qrcode]);
+        Common::res(['data' => isset($url) ? $url: $qrcode]);
     }
 
+    private function uploadWx($path)
+    {
+        // 上传到微信
+        $gzh_appid = Appinfo::where(['type' => 'gzh','status'=>0])->value('appid');
+        if(!$gzh_appid) return false;
 
+        $res = (new WxAPI($gzh_appid))->uploadimg($path);
+        if (isset($res['errcode']) && $res['errcode'] == 45009){//公众号达到日极限
+            Appinfo::where(['appid' => $gzh_appid])->update(['status'=>-1]);
+            return false;
+        }
+
+        //获取到地址才返回
+        if(isset($res['url'])){
+            return str_replace('http', 'https', $res['url']);
+        }
+        return false;
+    }
 }
