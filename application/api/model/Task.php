@@ -34,6 +34,9 @@ class Task extends Base
 
         switch ($type) {
             case Task::SIGN:
+                $avatarurl = User::where('id',$user_id)->value('avatarurl');
+                if(!$avatarurl) Common::res(['code' => 1, 'msg' => '请点击个人中心-头像完善个人信息']);
+
                 $res = self::settleSign($user_id);
                 break;
             case Task::INVITE:

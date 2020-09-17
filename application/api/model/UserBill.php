@@ -23,6 +23,9 @@ class UserBill extends Base
      */
     public static function withdraw($user_id, $number)
     {
+        $avatarurl = User::where('id',$user_id)->value('avatarurl');
+        if(!$avatarurl) Common::res(['code' => 1, 'msg' => '请点击个人中心-头像完善个人信息']);
+
         $state = UserState::where('user_id', $user_id)->find();
         if ($state['balance'] < $number) {
             Common::res(['code' => 1, 'msg' => '余额不足']);
@@ -81,6 +84,10 @@ class UserBill extends Base
      */
     public static function lottery($uid)
     {
+
+        $avatarurl = User::where('id',$uid)->value('avatarurl');
+        if(!$avatarurl) Common::res(['code' => 1, 'msg' => '请点击个人中心-头像完善个人信息']);
+
         // 抽奖
         $state  = UserState::get(['user_id' => $uid]);
         $keyNum = (int)$state['key_num'];
