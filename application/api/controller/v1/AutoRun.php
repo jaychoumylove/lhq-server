@@ -60,9 +60,14 @@ class AutoRun extends \app\base\controller\Base
 
             // 积分转化成余额
             // 加入日志
-            $userState = UserState::where('point', '>=', 3000)->select();
+            $userState = UserState::where('point', '>=', 3000)
+                ->order([
+                    'point' => 'desc',
+                    'pure_point' => 'desc',
+                ])->select();
             if (is_object($userState)) $userState = $userState->toArray();
             $insertRec = [];
+            $top = []; // 前三
             foreach ($userState as $key => $value) {
                 $number = bcdiv($value['point'], 10000, 1);
                 $changeNumber = bcmul($number, 10000);
@@ -76,6 +81,9 @@ class AutoRun extends \app\base\controller\Base
                 ];
 
                 array_push($insertRec, $item);
+                if (count($top) < 3) {
+                    array_push($top, $value['user_id']);
+                }
             }
 
             (new Rec())->insertAll($insertRec);
@@ -85,6 +93,14 @@ class AutoRun extends \app\base\controller\Base
                     'balance' => Db::raw('`balance` + ((`point` div 1000) * 0.1)'),
                     'point' => Db::raw('`point` - ((`point` div 1000)*1000)'),
                 ]);
+
+            // 前三名额外奖励
+            $topReward = [100,40,20];
+            foreach ($top as $index => $item) {
+                UserState::where('user_id', $item)->update([
+                    'balance' => Db::raw('`balance` + '.$topReward[$index]),
+                ]);
+            }
 
             Db::commit();
         } catch (Exception $e) {
