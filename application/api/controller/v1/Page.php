@@ -62,7 +62,7 @@ class Page extends Base
             ->limit(6)
             ->select();
 
-        $top = UserState::order([
+        $top = UserState::with(['user'])->order([
                 'point' => 'desc',
                 'update_time' => 'asc'
             ])
