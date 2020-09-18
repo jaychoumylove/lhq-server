@@ -9,6 +9,7 @@ use app\api\model\Lock;
 use app\api\model\Rec;
 use app\api\model\UserState;
 use app\api\model\UserTask;
+use Exception;
 use think\Db;
 
 class AutoRun extends \app\base\controller\Base
@@ -76,7 +77,6 @@ class AutoRun extends \app\base\controller\Base
             foreach ($userState as $key => $value) {
                 $number = bcdiv($value['point'], $point2balance['exchange'], 1);
                 $changeNumber = bcmul($number, $point2balance['exchange']);
-//                $left = bcsub($value['point'], $changeNumber);
                 $item = [
                     'user_id' => $value['user_id'],
                     'content' => '每日积分换算',
