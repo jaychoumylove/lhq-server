@@ -12,9 +12,18 @@ use app\api\model\UserState;
 use app\api\model\UserTask;
 use Exception;
 use think\Db;
+use think\Log;
 
 class AutoRun extends \app\base\controller\Base
 {
+    public function index()
+    {
+//        echo $this->minuteHandle() . '</br>';
+        echo $this->dayHandle() . '</br>';
+        echo $this->weekHandle() . '</br>';
+        echo $this->monthHandle() . '</br>';
+    }
+
     public function minuteHandle()
     {
         $lock = Lock::getVal('minute_end');
@@ -41,10 +50,10 @@ class AutoRun extends \app\base\controller\Base
 
     public function dayHandle()
     {
-//        $lock = Lock::getVal('day_end');
-//        if (date('md', time()) == date('md', strtotime($lock['time']))) {
-//            return '本日已执行过';
-//        }
+        $lock = Lock::getVal('day_end');
+        if (date('md', time()) == date('md', strtotime($lock['time']))) {
+            return '本日已执行过';
+        }
         // lock
         Lock::setVal('day_end', 1);
 
