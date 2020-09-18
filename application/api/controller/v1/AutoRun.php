@@ -62,8 +62,9 @@ class AutoRun extends \app\base\controller\Base
                 ->update(['number' => 0]);
 
             // 积分转化成余额
-
             $point2balance = Cfg::getCfg('point_balance');
+            // 奖池奖金
+            $allReward = Cfg::getCfg('bonus_pools');
             // 前三名额外奖励
             $topReward = Cfg::getCfg('top_three_bonus');
             $length = count($topReward);
@@ -74,13 +75,19 @@ class AutoRun extends \app\base\controller\Base
                     'pure_point' => 'desc',
                 ])->select();
             if (is_object($userState)) $userState = $userState->toArray();
+
+            $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
+            $sumPoint = (int)array_sum(array_column($userState, 'point'));
+            $sumPoint = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头
+            $leftReward =  bcsub($allReward, array_sum($topReward));
+            $rate = bcdiv($leftReward, $sumPoint, 2);
             $insertRec = [];
             $insertNot = [];
             $top = []; // 前三
             foreach ($userState as $key => $value) {
                 $number = bcdiv($value['point'], $point2balance['exchange'], 1);
                 $changeNumber = bcmul($number, $point2balance['exchange']);
-                $addBalance = bcdiv($changeNumber, $point2balance['exchange'], 1);
+                $addBalance = bcdiv($changeNumber, $rate, 1);
                 $item = [
                     'user_id' => $value['user_id'],
                     'content' => '每日积分换算',
@@ -109,8 +116,6 @@ class AutoRun extends \app\base\controller\Base
 
             (new Rec())->insertAll($insertRec);
             (new Notice())->insertAll($insertNot);
-
-            $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
             UserState::where('point', '>=', $point2balance['min_point'])
                 ->update([
                     'balance' => Db::raw('`balance` + ((`point` div '.$exchangeMinPoint.') * 0.1)'),

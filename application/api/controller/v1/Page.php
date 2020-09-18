@@ -85,9 +85,9 @@ class Page extends Base
             $notice = null;
         } else {
             // 自动已读
-            Notice::where('id', $notice['id'])->update([
-                'is_read' => 1
-            ]);
+//            Notice::where('id', $notice['id'])->update([
+//                'is_read' => 1
+//            ]);
         }
 
         Common::res(['data' => [
