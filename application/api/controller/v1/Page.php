@@ -51,9 +51,9 @@ class Page extends Base
         $user = \app\api\model\User::where('id', $this->uid)->field('id,nickname,avatarurl')->find();
 
         $lottery = Lottery::order([
-                'index' => 'asc',
-                'create_time' => 'desc'
-            ])
+            'index' => 'asc',
+            'create_time' => 'desc'
+        ])
             ->field('reward,index')
             ->select();
 
@@ -63,9 +63,9 @@ class Page extends Base
             ->select();
 
         $top = UserState::with(['user'])->order([
-                'point' => 'desc',
-                'update_time' => 'asc'
-            ])
+            'point' => 'desc',
+            'update_time' => 'asc'
+        ])
             ->limit(3)
             ->select();
 
@@ -165,7 +165,12 @@ class Page extends Base
         // 排行 20名 积分desc
         $page = input('page', 1);
         $size = input('size', 20);
-        $res['rankInfo'] = [];
+
+
+        $res['rankInfo'] = [
+            'bonus_pools' => Cfg::getCfg('bonus_pools'),
+            'top_three_bonus' => Cfg::getCfg('top_three_bonus'),
+        ];
         $res['list'] = UserState::with(['user'])
             ->field('point,pure_point,id,user_id,update_time')
             ->order([
@@ -266,7 +271,7 @@ class Page extends Base
                     $lastSettle = strtotime($task['last_settle_time']);
                     $diff = (int)bcsub($currentTime, $lastSettle);
                     $ableSettle = $diff >= $item['reward']['second'];
-                    $item['seconds'] = $ableSettle ? 0: $diff;
+                    $item['seconds'] = $ableSettle ? 0 : $diff;
                 }
 
                 if ($item['type'] == \app\api\model\Task::VIDEO_KEY) {
