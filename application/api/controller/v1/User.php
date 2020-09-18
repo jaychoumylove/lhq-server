@@ -157,7 +157,7 @@ class User extends Base
             }
         }
 
-        Common::res(['data' => isset($url) ? $url: $qrcode]);
+        Common::res(['data' => empty($url) ? $qrcode: $url]);
     }
 
     private function uploadWx($path)
