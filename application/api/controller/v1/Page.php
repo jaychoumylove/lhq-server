@@ -271,7 +271,7 @@ class Page extends Base
                     $lastSettle = strtotime($task['last_settle_time']);
                     $diff = (int)bcsub($currentTime, $lastSettle);
                     $ableSettle = $diff >= $item['reward']['second'];
-                    $item['seconds'] = $ableSettle ? 0 : $diff;
+                    $item['seconds'] = $ableSettle ? 0 : bcsub($item['reward']['second'], $diff);
                 }
 
                 if ($item['type'] == \app\api\model\Task::VIDEO_KEY) {
