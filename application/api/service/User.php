@@ -89,7 +89,9 @@ class User
         if ($rec) {
             // 记录日志
             $recSave = ['user_id' => $uid, 'type' => $rec['type']];
+            $recSave['before_key_num'] = isset($userCurrency['key_num']) ? $userCurrency['key_num'] : 0;
             $recSave['key_num'] = isset($currency['key_num']) ? $currency['key_num'] : 0;
+            $recSave['before_point'] = isset($userCurrency['point']) ? $userCurrency['point'] : 0;
             $recSave['point'] = isset($currency['point']) ? $currency['point'] : 0;
             $recSave['content'] = isset($rec['content']) ? $rec['content'] : null;
             $recSave['target_user_id'] = isset($rec['target_user_id']) ? $rec['target_user_id'] : null;
