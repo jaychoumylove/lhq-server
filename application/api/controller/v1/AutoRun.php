@@ -6,6 +6,7 @@ namespace app\api\controller\v1;
 
 use app\api\model\Cfg;
 use app\api\model\Lock;
+use app\api\model\Notice;
 use app\api\model\Rec;
 use app\api\model\UserState;
 use app\api\model\UserTask;
@@ -65,6 +66,7 @@ class AutoRun extends \app\base\controller\Base
             $point2balance = Cfg::getCfg('point_balance');
             // 前三名额外奖励
             $topReward = Cfg::getCfg('top_three_bonus');
+            $length = count($topReward);
             // 加入日志
             $userState = UserState::where('point', '>=', $point2balance['min_point'])
                 ->order([
@@ -73,10 +75,12 @@ class AutoRun extends \app\base\controller\Base
                 ])->select();
             if (is_object($userState)) $userState = $userState->toArray();
             $insertRec = [];
+            $insertNot = [];
             $top = []; // 前三
             foreach ($userState as $key => $value) {
                 $number = bcdiv($value['point'], $point2balance['exchange'], 1);
                 $changeNumber = bcmul($number, $point2balance['exchange']);
+                $addBalance = bcdiv($changeNumber, $point2balance['exchange'], 1);
                 $item = [
                     'user_id' => $value['user_id'],
                     'content' => '每日积分换算',
@@ -86,12 +90,25 @@ class AutoRun extends \app\base\controller\Base
                 ];
 
                 array_push($insertRec, $item);
-                if (count($top) < count($topReward)) {
+                if (count($top) < $length) {
                     array_push($top, $value['user_id']);
                 }
+
+                $noticeItem = [
+                    'user_id' => $value['user_id'],
+                    'content' => '每日积分换算，积分-'.$changeNumber.'，余额+'.$addBalance,
+                    'type' => 1,
+                    'extra' => json_encode([
+                        'point' => -$changeNumber,
+                        'balance' => $addBalance
+                    ]),
+                    'is_read' => 0
+                ];
+                array_push($insertNot, $noticeItem);
             }
 
             (new Rec())->insertAll($insertRec);
+            (new Notice())->insertAll($insertNot);
 
             $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
             UserState::where('point', '>=', $point2balance['min_point'])

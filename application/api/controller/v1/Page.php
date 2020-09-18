@@ -8,6 +8,7 @@ use app\api\model\CfgNovel;
 use app\api\model\CfgShare;
 use app\api\model\Lottery;
 use app\api\model\LotteryLog;
+use app\api\model\Notice;
 use app\api\model\Rec;
 use app\api\model\User;
 use app\api\model\UserBill;
@@ -69,13 +70,34 @@ class Page extends Base
             ->limit(3)
             ->select();
 
+        $notice = Notice::where('type', 1)
+            ->where('user_id', $this->uid)
+            ->where('is_read', 0)
+            ->where('create_time', 'today')
+            ->field('user_id,type,is_read,content,extra,create_time,id')
+            ->order([
+                'create_time' => 'desc',
+                'id' => 'desc'
+            ])
+            ->find();
+
+        if (empty($notice)) {
+            $notice = null;
+        } else {
+            // 自动已读
+            Notice::where('id', $notice['id'])->update([
+                'is_read' => 1
+            ]);
+        }
+
         Common::res(['data' => [
             'log' => $log,
             'lottery' => $lottery,
             'top' => $top,
             'key_num' => $userState['key_num'],
             'lucky_num' => $userState['lucky_num'],
-            'user' => $user
+            'user' => $user,
+            'notice' => $notice
         ]]);
     }
 
