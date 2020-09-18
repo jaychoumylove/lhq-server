@@ -41,10 +41,10 @@ class AutoRun extends \app\base\controller\Base
 
     public function dayHandle()
     {
-        $lock = Lock::getVal('day_end');
-        if (date('md', time()) == date('md', strtotime($lock['time']))) {
-            return '本日已执行过';
-        }
+//        $lock = Lock::getVal('day_end');
+//        if (date('md', time()) == date('md', strtotime($lock['time']))) {
+//            return '本日已执行过';
+//        }
         // lock
         Lock::setVal('day_end', 1);
 
@@ -77,17 +77,17 @@ class AutoRun extends \app\base\controller\Base
             if (is_object($userState)) $userState = $userState->toArray();
 
             $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
-            $sumPoint = (int)array_sum(array_column($userState, 'point'));
-            $sumPoint = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头
-            $leftReward =  bcsub($allReward, array_sum($topReward));
-            $rate = bcdiv($leftReward, $sumPoint, 2);
+            $sumPoint = (int)array_sum(array_column($userState, 'point')); // 总贝壳数
+            $sumPoint = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头 20394->20000
+            $leftReward =  (int)bcsub($allReward, array_sum($topReward)); // 去除前三奖金
+            $rate = $leftReward / $sumPoint; // 计算积分奖金比例
             $insertRec = [];
             $insertNot = [];
             $top = []; // 前三
             foreach ($userState as $key => $value) {
                 $number = bcdiv($value['point'], $point2balance['exchange'], 1);
                 $changeNumber = bcmul($number, $point2balance['exchange']);
-                $addBalance = bcdiv($changeNumber, $rate, 1);
+                $addBalance = bcmul($changeNumber, $rate, 1);
                 $item = [
                     'user_id' => $value['user_id'],
                     'content' => '每日积分换算',
@@ -97,36 +97,46 @@ class AutoRun extends \app\base\controller\Base
                 ];
 
                 array_push($insertRec, $item);
+                $noticeBalance = $addBalance; // 通知消息把前三奖金合并一起了
                 if (count($top) < $length) {
+                    $noticeBalance += $topReward[count($top)];
                     array_push($top, $value['user_id']);
                 }
 
+
                 $noticeItem = [
                     'user_id' => $value['user_id'],
-                    'content' => '每日积分换算，积分-'.$changeNumber.'，余额+'.$addBalance,
+                    'content' => '每日积分换算，积分-'.$changeNumber.'，余额+'.$noticeBalance,
                     'type' => 1,
                     'extra' => json_encode([
                         'point' => -$changeNumber,
-                        'balance' => $addBalance
+                        'balance' => $noticeBalance
                     ]),
                     'is_read' => 0
                 ];
                 array_push($insertNot, $noticeItem);
+
+                UserState::where('point', '>=', $point2balance['min_point'])
+                    ->where('user_id', $value['user_id'])
+                    ->update([
+                        'balance' => Db::raw('`balance` + '.$noticeBalance),
+                        'point' => Db::raw('`point` - '.$changeNumber),
+                    ]);
             }
 
             (new Rec())->insertAll($insertRec);
             (new Notice())->insertAll($insertNot);
-            UserState::where('point', '>=', $point2balance['min_point'])
-                ->update([
-                    'balance' => Db::raw('`balance` + ((`point` div '.$exchangeMinPoint.') * 0.1)'),
-                    'point' => Db::raw('`point` - ((`point` div '.$exchangeMinPoint.')*'.$exchangeMinPoint.')'),
-                ]);
+//            UserState::where('point', '>=', $point2balance['min_point'])
+//                ->update([
+//                    'balance' => Db::raw('`balance` + ((`point` div '.$exchangeMinPoint.') * 0.1)'),
+//                    'point' => Db::raw('`point` - ((`point` div '.$exchangeMinPoint.')*'.$exchangeMinPoint.')'),
+//                ]);
 
-            foreach ($top as $index => $item) {
-                UserState::where('user_id', $item)->update([
-                    'balance' => Db::raw('`balance` + '.$topReward[$index]),
-                ]);
-            }
+//            foreach ($top as $index => $item) {
+//                UserState::where('user_id', $item)->update([
+//                    'balance' => Db::raw('`balance` + '.$topReward[$index]),
+//                ]);
+//            }
 
             Db::commit();
         } catch (Exception $e) {
