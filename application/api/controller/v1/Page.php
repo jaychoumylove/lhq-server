@@ -73,7 +73,7 @@ class Page extends Base
         $notice = Notice::where('type', 1)
             ->where('user_id', $this->uid)
             ->where('is_read', 0)
-            ->where('create_time', 'today')
+            ->whereTime('create_time', 'today')
             ->field('user_id,type,is_read,content,extra,create_time,id')
             ->order([
                 'create_time' => 'desc',
