@@ -112,7 +112,7 @@ class Task extends Base
 
             // 是否有上级
             if ($state['spread_uid'] > 0) {
-                UserState::changePointWithSpread($user_id,$state['spread_uid'], $number);
+                UserState::changePointWithSpread($user_id,$state['spread_uid'], $point);
             }
 
             (new UserService())->change($user_id,[
