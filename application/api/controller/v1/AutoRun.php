@@ -4,6 +4,7 @@
 namespace app\api\controller\v1;
 
 
+use app\api\model\Cfg;
 use app\api\model\Lock;
 use app\api\model\Rec;
 use app\api\model\UserState;
@@ -59,8 +60,12 @@ class AutoRun extends \app\base\controller\Base
                 ->update(['number' => 0]);
 
             // 积分转化成余额
+
+            $point2balance = Cfg::getCfg('point_balance');
+            // 前三名额外奖励
+            $topReward = Cfg::getCfg('top_three_bonus');
             // 加入日志
-            $userState = UserState::where('point', '>=', 3000)
+            $userState = UserState::where('point', '>=', $point2balance['min_point'])
                 ->order([
                     'point' => 'desc',
                     'pure_point' => 'desc',
@@ -69,8 +74,8 @@ class AutoRun extends \app\base\controller\Base
             $insertRec = [];
             $top = []; // 前三
             foreach ($userState as $key => $value) {
-                $number = bcdiv($value['point'], 10000, 1);
-                $changeNumber = bcmul($number, 10000);
+                $number = bcdiv($value['point'], $point2balance['exchange'], 1);
+                $changeNumber = bcmul($number, $point2balance['exchange']);
 //                $left = bcsub($value['point'], $changeNumber);
                 $item = [
                     'user_id' => $value['user_id'],
@@ -81,21 +86,20 @@ class AutoRun extends \app\base\controller\Base
                 ];
 
                 array_push($insertRec, $item);
-                if (count($top) < 3) {
+                if (count($top) < count($topReward)) {
                     array_push($top, $value['user_id']);
                 }
             }
 
             (new Rec())->insertAll($insertRec);
 
-            UserState::where('point', '>=', 3000)
+            $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
+            UserState::where('point', '>=', $point2balance['min_point'])
                 ->update([
-                    'balance' => Db::raw('`balance` + ((`point` div 1000) * 0.1)'),
-                    'point' => Db::raw('`point` - ((`point` div 1000)*1000)'),
+                    'balance' => Db::raw('`balance` + ((`point` div '.$exchangeMinPoint.') * 0.1)'),
+                    'point' => Db::raw('`point` - ((`point` div '.$exchangeMinPoint.')*'.$exchangeMinPoint.')'),
                 ]);
 
-            // 前三名额外奖励
-            $topReward = [100,40,20];
             foreach ($top as $index => $item) {
                 UserState::where('user_id', $item)->update([
                     'balance' => Db::raw('`balance` + '.$topReward[$index]),
