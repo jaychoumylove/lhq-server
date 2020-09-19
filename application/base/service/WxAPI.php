@@ -331,26 +331,26 @@ class WxAPI
     {
         $url = 'https://' . $this->apiHost . '/cgi-bin/message/subscribe/send?access_token=' . $this->appinfo['access_token'];
 
-        $data = [
+        $data1 = [
             "touser" => $data['openid'],
             "template_id" => "7mcxD-zXtsLgf1zbW5luoxA62iWtvP_dBcOla_wH0sI",
             "data" => [
-                "keyword1" => [
-                    "value" => $data['balance'] . "余额"
+                "amount1" => [
+                    "value" => "+".$data['balance'] . "余额"
                 ],
-                "keyword2" => [
+                "thing2" => [
                     "value" =>  $data['point'] . "贝壳"
                 ],
-                "keyword3" => [
+                "time3" => [
                     "value" =>  $data['date']
                 ],
-                "keyword4" => [
+                "thing4" => [
                     "value" =>  "您的收益已结算，请及时查收"
                 ]
             ],
         ];
 
-        return $this->request($url, json_encode($data, JSON_UNESCAPED_UNICODE));
+        return $this->request($url, json_encode($data1, JSON_UNESCAPED_UNICODE));
     }
 
     /**

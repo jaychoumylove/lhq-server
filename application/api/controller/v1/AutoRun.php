@@ -44,15 +44,18 @@ class AutoRun extends \app\base\controller\Base
                     ->whereTime('create_time', 'today')
                     ->limit(400)
                     ->select();
+                if (is_object($notices)) $notices = json_decode($notices,true);
                 foreach ($notices as $notice){
                     $isDone = Notice::where('id', $notice['id'])->update(['is_send'=>1]);
-                    $extra = json_decode($notice['extra']);
+                    $openid = \app\api\model\User::where('id',$notice['user_id'])->value('openid');
                     if($isDone){
                         $data = [
-                            'balance'=>$extra['balance'],
-                            'point'=>$extra['point'],
+                            'openid'=>$openid,
+                            'balance'=>$notice['extra']['balance'],
+                            'point'=>$notice['extra']['point'],
                             'date'=>date('Y-m-d',strtotime($notice['create_time'])),
                         ];
+
                         (new WxAPI())->sendTemplateMini($data);
                     }
                 }
