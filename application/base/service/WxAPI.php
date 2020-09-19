@@ -324,6 +324,36 @@ class WxAPI
     }
 
     /**
+     * 发送小程序订阅消息
+     * method post
+     */
+    public function sendTemplateMini($data)
+    {
+        $url = 'https://' . $this->apiHost . '/cgi-bin/message/subscribe/send?access_token=' . $this->appinfo['access_token'];
+
+        $data = [
+            "touser" => $data['openid'],
+            "template_id" => "7mcxD-zXtsLgf1zbW5luoxA62iWtvP_dBcOla_wH0sI",
+            "data" => [
+                "keyword1" => [
+                    "value" => $data['balance'] . "余额"
+                ],
+                "keyword2" => [
+                    "value" =>  $data['point'] . "贝壳"
+                ],
+                "keyword3" => [
+                    "value" =>  $data['date']
+                ],
+                "keyword4" => [
+                    "value" =>  "您的收益已结算，请及时查收"
+                ]
+            ],
+        ];
+
+        return $this->request($url, json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
      * 检查一段文本是否含有违法违规内容。
      * 若接口errcode返回87014(内容含有违法违规内容)
      */

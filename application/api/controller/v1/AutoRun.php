@@ -10,6 +10,7 @@ use app\api\model\Notice;
 use app\api\model\Rec;
 use app\api\model\UserState;
 use app\api\model\UserTask;
+use app\base\service\WxAPI;
 use Exception;
 use think\Db;
 use think\Log;
@@ -18,7 +19,6 @@ class AutoRun extends \app\base\controller\Base
 {
     public function index()
     {
-//        echo $this->minuteHandle() . '</br>';
         echo $this->dayHandle() . '</br>';
         echo $this->weekHandle() . '</br>';
         echo $this->monthHandle() . '</br>';
@@ -36,6 +36,28 @@ class AutoRun extends \app\base\controller\Base
         Lock::setVal('minute_end', 1);
         Db::startTrans();
         try {
+
+            if(date('H')>=8 && date('H')<=10){
+                $notices = Notice::where('type', 1)
+                    ->where('is_read', 0)
+                    ->where('is_send', 0)
+                    ->whereTime('create_time', 'today')
+                    ->limit(400)
+                    ->select();
+                foreach ($notices as $notice){
+                    $isDone = Notice::where('id', $notice['id'])->update(['is_send'=>1]);
+                    $extra = json_decode($notice['extra']);
+                    if($isDone){
+                        $data = [
+                            'balance'=>$extra['balance'],
+                            'point'=>$extra['point'],
+                            'date'=>$notice['create_time'],
+                        ];
+                        (new WxAPI())->sendTemplateMini($data);
+                    }
+                }
+            }
+
             Db::commit();
         } catch (Exception $e) {
             Db::rollBack();
