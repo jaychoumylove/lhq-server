@@ -51,7 +51,7 @@ class AutoRun extends \app\base\controller\Base
                         $data = [
                             'balance'=>$extra['balance'],
                             'point'=>$extra['point'],
-                            'date'=>$notice['create_time'],
+                            'date'=>date('Y-m-d',strtotime($notice['create_time'])),
                         ];
                         (new WxAPI())->sendTemplateMini($data);
                     }

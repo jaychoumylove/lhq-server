@@ -98,9 +98,16 @@ class Page extends Base
             'top' => $top,
             'key_num' => $userState['key_num'],
             'lucky_num' => $userState['lucky_num'],
+            'is_accept' => $userState['is_accept'],
             'user' => $user,
             'notice' => $notice
         ]]);
+    }
+
+    public function isAccept()
+    {
+        $this->getUser();
+        UserState::where(['user_id' => $this->uid,'is_accept'=>0])->update(['is_accept'=>1]);
     }
 
     public function friendRank()
