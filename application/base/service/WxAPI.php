@@ -336,7 +336,7 @@ class WxAPI
             "template_id" => "7mcxD-zXtsLgf1zbW5luoxA62iWtvP_dBcOla_wH0sI",
             "data" => [
                 "amount1" => [
-                    "value" => "+".$data['balance'] . "余额"
+                    "value" => $data['balance']."元"
                 ],
                 "thing2" => [
                     "value" =>  $data['point'] . "贝壳"
