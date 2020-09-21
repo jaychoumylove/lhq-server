@@ -20,7 +20,8 @@
         "topthink/framework": "5.0.*",
         "workerman/gateway-worker": "^3.0",
         "workerman/workerman": "^3.5",
-      "ext-bcmath": "*"
+      "ext-bcmath": "*",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
