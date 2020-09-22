@@ -111,11 +111,12 @@ class AutoRun extends \app\base\controller\Base
                     ])->select();
                 if (is_object($userState)) $userState = $userState->toArray();
 
-                $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
-                $sumPoint         = (int)array_sum(array_column($userState, 'point')); // 总贝壳数
-                $sumPoint         = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头 20394->20000
-                $leftReward       = (int)bcsub($allReward, array_sum($topReward)); // 去除前三奖金
-                $rate             = $leftReward / $sumPoint; // 计算积分奖金比例
+//                $exchangeMinPoint = bcmul($point2balance['exchange'], $point2balance['min_step']);
+//                $sumPoint         = (int)array_sum(array_column($userState, 'point')); // 总贝壳数
+//                $sumPoint         = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头 20394->20000
+//                $leftReward       = (int)bcsub($allReward, array_sum($topReward)); // 去除前三奖金
+//                $rate             = $leftReward / $sumPoint; // 计算积分奖金比例
+                $rate = 10000 / 1; // 暂时替换成10000/1
                 $insertRec        = [];
                 $insertNot        = [];
                 $top              = []; // 前三
