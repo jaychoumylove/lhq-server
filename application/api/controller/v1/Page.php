@@ -204,6 +204,7 @@ class Page extends Base
         ];
         $res['list'] = UserState::with(['user'])
             ->field('point,pure_point,id,user_id,update_time')
+            ->where('point', '>', 0)
             ->order([
                 'point' => 'desc',
                 'pure_point' => 'desc',
