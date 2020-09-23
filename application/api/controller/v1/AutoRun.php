@@ -116,7 +116,7 @@ class AutoRun extends \app\base\controller\Base
 //                $sumPoint         = bcdiv($sumPoint, $exchangeMinPoint) * $exchangeMinPoint; // 取整去零头 20394->20000
 //                $leftReward       = (int)bcsub($allReward, array_sum($topReward)); // 去除前三奖金
 //                $rate             = $leftReward / $sumPoint; // 计算积分奖金比例
-                $rate = 10000 / 1; // 暂时替换成10000/1
+                $rate = 1 / 10000; // 暂时替换成10000/1
                 $insertRec        = [];
                 $insertNot        = [];
                 $top              = []; // 前三
