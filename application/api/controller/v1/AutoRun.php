@@ -96,9 +96,10 @@ class AutoRun extends \app\base\controller\Base
                 ->update(['number' => 0]);
 
             // 钥匙清零
-            UserState::where('key_num', '>', 0)
+            UserState::where('1=1')
                 ->update([
-                    'key_num' => 0
+                    'key_num' => 0,
+                    'lucky_num' => 0,
                 ]);
 
             // 积分转化成余额
