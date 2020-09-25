@@ -6,6 +6,8 @@ namespace app\api\controller;
 use app\api\model\AnimalLottery;
 use app\api\model\CfgAnimal;
 use app\api\model\CfgAnimalLevel;
+use app\api\model\Notice;
+use app\api\model\User;
 use app\base\controller\Base;
 use app\base\model\Appinfo;
 use app\base\service\WxAPI;
@@ -44,57 +46,21 @@ class Test extends Base
         echo Common::getSession(input('token'));
     }
 
-    public function getUserQrCode()
+    public function s()
     {
-        $this->getUser();
-//        $qrcode = UserState::where('user_id', $this->uid)->value('qrcode');
-//        if (!$qrcode) {
-//            if (Appinfo::where(['id' => 1])->value('access_token_expire') < date('Y-m-d H:i:s')) {
-//                (new WxAPI())->getAccessToken();
-//            }
-//            $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
-//            if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
-//            $getQrcode   = base64_encode($getQrcode);
-//            $qrcode = 'data:image/png;base64,'.$getQrcode;
-//            UserState::where('user_id', $this->uid)->update([
-//                'qrcode'=>$qrcode
-//            ]);
-//        }
+        $user = User::get(680026);
+        $notice = Notice::where('user_id', $user['id'])
+            ->where('type', 1)
+            ->find();
 
-        if (Appinfo::where(['id' => 1])->value('access_token_expire') < date('Y-m-d H:i:s')) {
-            (new WxAPI())->getAccessToken();
-        }
-        $getQrcode = (new WxAPI())->getUnlimited('/pages/index/index','referrer='.$this->uid);
-        if (isset($getQrcode['errcode']) && $getQrcode['errcode'] != 0) Common::res(['code' => $getQrcode['errcode'], 'msg' => $getQrcode['errmsg']]);
-//        $getQrcode   = base64_encode($getQrcode);
-//        $qrcode = 'data:image/png;base64,'.$getQrcode;
-//        $image_parts = explode(";base64,", $qrcode);
-//        $image_type_aux = explode("image/", $image_parts[0]);
-//        $image_type = $image_type_aux[1];
-//        $image_base64 = base64_decode($image_parts[1]);
-        $file = ROOT_PATH . 'public' . DS . 'uploads' . DS . uniqid() . '.png';
-        file_put_contents($file, $getQrcode);
-        $this->uploadwX($file);
-    }
+        $openid = $user['openid'];
+        $data = [
+            'openid'  => $openid,
+            'balance' => $notice['extra']['balance'],
+            'point'   => $notice['extra']['point'],
+            'date'    => date('Y-m-d', strtotime($notice['create_time'])),
+        ];
 
-    public function uploadwX($realPath)
-    {
-        // 上传到微信
-        $gzh_appid = Appinfo::where(['type' => 'gzh','status'=>0])->value('appid');
-        if(!$gzh_appid) Common::res(['code' => 1, 'msg' => '图片服务器不可用，请联系客服']);
-
-        $res = (new WxAPI($gzh_appid))->uploadimg($realPath);
-        if (isset($res['errcode']) && $res['errcode'] == 45009){//公众号达到日极限
-            Appinfo::where(['appid' => $gzh_appid])->update(['status'=>-1]);
-            Common::res(['code' => 1, 'msg' => '上传失败，请重试一次']);
-        }
-
-        //获取到地址才返回
-        if(isset($res['url'])){
-            $res['https_url'] = str_replace('http', 'https', $res['url']);
-            unlink($realPath);
-            Common::res(['data' => $res]);
-        }
-
+        (new WxAPI())->sendTemplateMini($data);
     }
 }
