@@ -95,6 +95,12 @@ class AutoRun extends \app\base\controller\Base
                 ->where('number', '>', 0)
                 ->update(['number' => 0]);
 
+            // 钥匙清零
+            UserState::where('key_num', '>', 0)
+                ->update([
+                    'key_num' => 0
+                ]);
+
             // 积分转化成余额
             $point2balance = Cfg::getCfg('point_balance');
             if ($point2balance['auto']) {
