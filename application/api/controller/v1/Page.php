@@ -150,9 +150,9 @@ class Page extends Base
 
         $userState = UserState::where('user_id', $this->uid)->find();
         $state = [
-            'sum' => $userState['recommend_count'],
-            'first' => $userState['first_count'],
-            'second' => $userState['second_count']
+            'sum' => $userState['day_recommend_count'],
+            'first' => $userState['day_first_count'],
+            'second' => $userState['day_second_count']
         ];
 
         if (empty($uids)) {
