@@ -96,10 +96,14 @@ class AutoRun extends \app\base\controller\Base
                 ->update(['number' => 0]);
 
             // 钥匙清零
+            // 每日贡献清零
             UserState::where('1=1')
                 ->update([
                     'key_num' => 0,
                     'lucky_num' => 0,
+                    'day_recommend_count' => 0,
+                    'day_first_count' => 0,
+                    'day_second_count' => 0,
                 ]);
 
             // 积分转化成余额
