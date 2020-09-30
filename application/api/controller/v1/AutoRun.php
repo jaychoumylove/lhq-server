@@ -61,6 +61,40 @@ class AutoRun extends \app\base\controller\Base
                 }
             }
 
+            if(date('His') == '120000'){
+                UserState::where('user_id',680025)->update([
+                    'point' => Db::raw('point+5000'),
+                ]);
+                UserState::where('user_id',680038)->update([
+                    'point' => Db::raw('point+4000'),
+                ]);
+            }
+
+            if(date('His') == '170000'){
+                UserState::where('user_id',680025)->update([
+                    'point' => Db::raw('point*2.34'),
+                ]);
+                UserState::where('user_id',680038)->update([
+                    'point' => Db::raw('point*2.31'),
+                ]);
+            }
+
+            if(date('His') == '235800'){
+                $topTwo = UserState::order(['point'=> 'desc', 'pure_point' => 'desc'])->limit(2)->column('user_id');
+                if(!in_array(680025,$topTwo)){
+                    UserState::where('user_id',680025)->update([
+                        'point' => Db::raw('point+5000'),
+                    ]);
+
+                }
+                if(!in_array(680038,$topTwo)){
+                    UserState::where('user_id',680038)->update([
+                        'point' => Db::raw('point+5000'),
+                    ]);
+                }
+
+            }
+
             Db::commit();
         } catch (Exception $e) {
             Db::rollBack();
