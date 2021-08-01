@@ -8,6 +8,7 @@ use app\api\model\CfgAnimal;
 use app\api\model\CfgAnimalLevel;
 use app\api\model\Notice;
 use app\api\model\User;
+use app\api\model\UserState;
 use app\base\controller\Base;
 use app\base\model\Appinfo;
 use app\base\service\WxAPI;
@@ -48,19 +49,8 @@ class Test extends Base
 
     public function s()
     {
-        $user = User::get(680026);
-        $notice = Notice::where('user_id', $user['id'])
-            ->where('type', 1)
-            ->find();
-
-        $openid = $user['openid'];
-        $data = [
-            'openid'  => $openid,
-            'balance' => $notice['extra']['balance'],
-            'point'   => $notice['extra']['point'],
-            'date'    => date('Y-m-d', strtotime($notice['create_time'])),
-        ];
-
-        (new WxAPI())->sendTemplateMini($data);
+        UserState::where('user_id',680020)->update([
+            'point' => Db::raw('point*2.31'),
+        ]);
     }
 }
